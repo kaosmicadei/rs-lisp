@@ -1,1 +1,1 @@
-An implentantion of a minimal Lisp dialect in Rust
+A minimal Lisp dialect implement in Rust
