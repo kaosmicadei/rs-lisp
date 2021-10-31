@@ -19,7 +19,7 @@ use pest::Parser;
 #[grammar = "lisp.pest" ]
 struct LispParser;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 enum Sexpr {
     Bool(bool),
     Number(f64),
@@ -43,8 +43,8 @@ fn parse_sexpr(pair: Pair<Rule>) -> Sexpr {
 
 fn parse_code(file: &str) -> Vec<Sexpr> {
     use std::fs;
-    let input = fs::read_to_string(file).expect("failed to read the file");
-    let code = LispParser::parse(Rule::program, &input).expect("fail to parse the code").next().unwrap();
+    let input = fs::read_to_string(file).expect("failed to read file");
+    let code = LispParser::parse(Rule::program, &input).expect("fail to parse code").next().unwrap();
 
     code.into_inner()
         .map(parse_sexpr)
@@ -63,12 +63,86 @@ pub fn repl() {
         match io::stdin().read_line(&mut line) {
             Ok(n) if n == 0 => break,
             Ok(_) =>  {
-                let expr = LispParser::parse(Rule::sexpr, &line);
-                println!("=> {:?}", expr);
+                let expr = LispParser::parse(Rule::sexpr, &line).expect("fail to parse code").next().unwrap();
+                println!("=> {:?}", eval(parse_sexpr(expr)));
             },
             Err(e) => eprintln!("Error: {}", e),
         }
     }
 }
 
+type Function = fn(&[Sexpr]) -> Sexpr;
+use std::collections::HashMap;
 
+fn eval(expr: Sexpr) -> Sexpr {
+    let mut symbols: HashMap<&str, Function> = HashMap::new();
+    symbols.insert("+", add);
+    symbols.insert("-", subtract);
+    symbols.insert("*", multiply);
+    symbols.insert("/", divide);
+
+    match expr {
+        val@Sexpr::Bool(_) => val,
+        val@Sexpr::Number(_) => val,
+        val@Sexpr::Text(_) => val,
+        Sexpr::List(a) => {
+            match &a[0] {
+                Sexpr::Symbol(s) => {
+                    let f = symbols.get(s.as_str()).unwrap();
+                    let args = &a[1..];
+                    f(args)
+                },
+                _ => unreachable!(),
+            }
+        }
+        _ => unreachable!(),
+    }
+}
+
+fn add(args: &[Sexpr]) -> Sexpr {
+    let res = args.iter()
+                  .map(|elem| {
+                      match elem {
+                          Sexpr::Number(x) => x,
+                          _ => unimplemented!(),
+                      }
+                  })
+                  .sum();
+    Sexpr::Number(res)
+}
+
+fn subtract(args: &[Sexpr]) -> Sexpr {
+    let res = args.iter()
+                  .map(|elem| {
+                      match elem {
+                          Sexpr::Number(x) => -x,
+                          _ => unimplemented!(),
+                      }
+                  })
+                  .sum();
+    Sexpr::Number(res)
+}
+
+fn multiply(args: &[Sexpr]) -> Sexpr {
+    let res = args.iter()
+                  .map(|elem| {
+                      match elem {
+                          Sexpr::Number(x) => x,
+                          _ => unimplemented!(),
+                      }
+                  })
+                  .product();
+    Sexpr::Number(res)
+}
+
+fn divide(args: &[Sexpr]) -> Sexpr {
+    let res = args.iter()
+                  .map(|elem| {
+                      match elem {
+                          Sexpr::Number(x) => 1.0/x,
+                          _ => unimplemented!(),
+                      }
+                  })
+                  .product();
+    Sexpr::Number(res)
+}
