@@ -1,0 +1,20 @@
+WHITESPACE = _{ " " | "\t" | "\r" | "\n" }
+
+program = _{ SOI ~ sexprs ~ EOI }
+
+sexprs = { sexpr* }
+
+sexpr = _{ atom | list }
+
+list = { "(" ~ ")" | "(" ~ sexpr+ ~ ")" }
+
+atom = _{ bool | text | number | symbol }
+
+bool = { "true" | "false" }
+
+text = { "\"" ~ (!"\"" ~ ANY)+ ~ "\"" }
+
+number = @{ "-"? ~ ("0" | ASCII_NONZERO_DIGIT ~ ASCII_DIGIT*) ~ ("." ~ ASCII_DIGIT*)? ~ (^"e" ~ ("+" | "-") ~ ASCII_DIGIT+)? }
+
+symbol = @{ (operator | ASCII_ALPHANUMERIC)+ }
+operator = { "-" | "+" | "*" | "/" | "!" | "=" }
