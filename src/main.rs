@@ -1,3 +1,15 @@
+fn main() {
+    let args: Vec<String> = std::env::args().collect();
+        if args.len() > 2 {
+            eprint!("Usage: rs-lisp <file>");
+            std::process::exit(64);
+        } else if args.len() == 2 {
+            parse_code(&args[1]);
+        } else {
+            repl();
+        }
+}
+
 extern crate pest;
 #[macro_use]
 extern crate pest_derive;
@@ -39,7 +51,24 @@ fn parse_code(file: &str) -> Vec<Sexpr> {
         .collect()
 }
 
-fn main() {
-    let ast = parse_code("example.lisp");
-    println!("{:?}", ast);
+pub fn repl() {
+    use std::io::{self,Write};
+
+    let mut line = String::new();
+    loop {
+        print!("λ. ");
+        io::stdout().flush().expect("Failed print output");
+        
+        line.clear();
+        match io::stdin().read_line(&mut line) {
+            Ok(n) if n == 0 => break,
+            Ok(_) =>  {
+                let expr = LispParser::parse(Rule::sexpr, &line);
+                println!("=> {:?}", expr);
+            },
+            Err(e) => eprintln!("Error: {}", e),
+        }
+    }
 }
+
+
