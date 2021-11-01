@@ -75,11 +75,11 @@ type Function = fn(&[Sexpr]) -> Sexpr;
 use std::collections::HashMap;
 
 fn eval(expr: Sexpr) -> Sexpr {
-    let mut symbols: HashMap<&str, Function> = HashMap::new();
-    symbols.insert("+", add);
-    symbols.insert("-", subtract);
-    symbols.insert("*", multiply);
-    symbols.insert("/", divide);
+    let mut primitives: HashMap<&str, Function> = HashMap::new();
+    primitives.insert("+", add);
+    primitives.insert("-", subtract);
+    primitives.insert("*", multiply);
+    primitives.insert("/", divide);
 
     match expr {
         val@Sexpr::Bool(_) => val,
@@ -88,7 +88,7 @@ fn eval(expr: Sexpr) -> Sexpr {
         Sexpr::List(a) => {
             match &a[0] {
                 Sexpr::Symbol(s) => {
-                    let f = symbols.get(s.as_str()).unwrap();
+                    let f = primitives.get(s.as_str()).unwrap();
                     let args = &a[1..];
                     f(args)
                 },
