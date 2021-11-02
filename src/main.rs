@@ -18,7 +18,7 @@ pub fn repl() {
     use std::io::{self,Write};
     use std::collections::HashMap;
 
-    let env = HashMap::new();
+    let mut env = HashMap::new();
 
     let mut line = String::new();
     loop {
@@ -30,7 +30,7 @@ pub fn repl() {
             Ok(n) if n == 0 => break,
             Ok(_) =>  {
                 let expr = parser::parse_line(&line);
-                println!("=> {}\n", eval::eval(&env, &expr));
+                println!("=> {}\n", eval::eval(&mut env, &expr));
             },
             Err(e) => eprintln!("Error: {}", e),
         }
