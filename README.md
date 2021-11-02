@@ -1,1 +1,1 @@
-I am lerning how to use the [Pest](https://github.com/pest-parser/pest) parser by implement a very simple Lisp interpreter.
+As a personal project to learn Rust properly I decide to implement a very minimal Lisp interpreter using the [Pest](https://github.com/pest-parser/pest) parser. It's the first time I implement a programming language interpreter so I don't expect speed or efficiency.
