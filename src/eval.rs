@@ -52,6 +52,10 @@ fn call(func: &Sexpr, args: Vec<Sexpr>, env: &mut Enviroment) -> Sexpr {
                 env.insert(args[0].to_string(), args[1].clone());
                 args[1].clone()
             },
+            "print" => {
+                println!("{}", args[0]);
+                Sexpr::Nil
+            },
             _ => unreachable!(),
         }
     } else {

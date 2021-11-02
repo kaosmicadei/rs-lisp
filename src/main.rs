@@ -2,22 +2,25 @@
 mod parser;
 mod eval;
 
+use std::io::{self,Write};
+use std::collections::HashMap;
+
 fn main() {
     let args: Vec<String> = std::env::args().collect();
     if args.len() > 2 {
         eprint!("Usage: rs-lisp <file>");
         std::process::exit(64);
     } else if args.len() == 2 {
-        parser::parse_code(&args[1]);
+        let mut env = HashMap::new();
+        for expr in parser::parse_code(&args[1]) {
+            eval::eval(&mut env, &expr);
+        }
     } else {
         repl();
     }
 }
 
 pub fn repl() {
-    use std::io::{self,Write};
-    use std::collections::HashMap;
-
     let mut env = HashMap::new();
 
     let mut line = String::new();

@@ -1,12 +1,15 @@
 WHITESPACE = _{ " " | "\t" | "\r" | "\n" }
+COMMENT = _{ ";" ~ (!"\n" ~ ANY)* ~ "\n" }
 
 program = _{ SOI ~ sexprs ~ EOI }
 
 sexprs = { sexpr* }
 
-sexpr = _{ atom | list }
+sexpr = _{ atom | nil | list }
 
-list = { "(" ~ ")" | "(" ~ sexpr+ ~ ")" }
+nil = { "(" ~ ")" }
+
+list = { "(" ~ sexpr+ ~ ")" }
 
 atom = _{ bool | text | number | symbol }
 

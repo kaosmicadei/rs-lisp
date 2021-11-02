@@ -1,6 +1,14 @@
+(set x 
+    (/ 3 2))
 
-(set message "hello lisp")
-
+(print x)
 (print (+ 1 x))
 
-message
+(set message "hello lisp")
+(print message)
+
+;; (set f
+;;     (lambda (x y)
+;;         (+ x y)))
+
+;; (print (f 2 3))

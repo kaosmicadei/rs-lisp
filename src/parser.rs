@@ -10,6 +10,7 @@ pub struct LispParser;
 pub enum Sexpr {
     List(Vec<Sexpr>),
     // Atomic values
+    Nil,
     Bool(bool),
     Number(f64),
     Text(String),
@@ -20,6 +21,7 @@ use std::fmt;
 impl fmt::Display for Sexpr {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
+            Self::Nil => write!(f, "nil"),
             Self::Bool(b) => write!(f, "{}", b),
             Self::Number(n) => write!(f, "{}", n),
             Self::Text(t) => write!(f, "{}", t),
@@ -36,6 +38,7 @@ use pest::iterators::Pair;
 
 pub fn parse_sexpr(pair: Pair<Rule>) -> Sexpr {
     match pair.as_rule() {
+        Rule::nil => Sexpr::Nil,
         Rule::bool => Sexpr::Bool(pair.as_str().parse().unwrap()),
         Rule::number => Sexpr::Number(pair.as_str().parse().unwrap()),
         Rule::text => Sexpr::Text(pair.as_str().to_string()),
