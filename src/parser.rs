@@ -6,7 +6,7 @@ use pest_derive::Parser;
 #[grammar = "lisp.pest" ]
 pub struct LispParser;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum Sexpr {
     List(Vec<Sexpr>),
     // Atomic values
@@ -24,7 +24,7 @@ impl fmt::Display for Sexpr {
             Self::Nil => write!(f, "nil"),
             Self::Bool(b) => write!(f, "{}", b),
             Self::Number(n) => write!(f, "{}", n),
-            Self::Text(t) => write!(f, "{}", t),
+            Self::Text(t) => write!(f, "\"{}\"", t),
             Self::Symbol(s) => write!(f, "{}", s),
             Self::List(l) => {
                 let elems: Vec<String> = l.iter().map(ToString::to_string).collect();

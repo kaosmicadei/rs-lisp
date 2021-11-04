@@ -16,6 +16,7 @@ fn main() {
             eval::eval(&mut env, &expr);
         }
     } else {
+        println!("Press Ctrl-D to quit.");
         repl();
     }
 }
